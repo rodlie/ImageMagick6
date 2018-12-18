@@ -876,6 +876,16 @@ bool Magick::ReadOptions::quiet(void) const
    return(_quiet);
 }
 
+void Magick::ReadOptions::ping(const bool flag_)
+{
+  _imageInfo->ping=(MagickBooleanType) flag_;
+}
+
+bool Magick::ReadOptions::ping(void) const
+{
+   return(static_cast<bool>(_imageInfo->ping));
+}
+
 void Magick::ReadOptions::size(const Geometry &geometry_)
 {
   _imageInfo->size=(char *) RelinquishMagickMemory(_imageInfo->size);

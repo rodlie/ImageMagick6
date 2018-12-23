@@ -136,6 +136,8 @@ static Image *ReadCAPTIONImage(const ImageInfo *image_info,
   assert(exception->signature == MagickCoreSignature);
   image=AcquireImage(image_info);
   (void) ResetImagePage(image,"0x0+0+0");
+  if ((image->columns != 0) && (image->rows != 0))
+    (void) SetImageBackgroundColor(image);
   /*
     Format caption.
   */

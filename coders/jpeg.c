@@ -174,7 +174,8 @@ typedef struct _QuantizationTable
 */
 static const char
   *xmp_namespace = "http://ns.adobe.com/xap/1.0/ ";
-
+#define XmpNamespaceExtent 28
+
 /*
   Forward declarations.
 */
@@ -648,7 +649,8 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
     *p++=(unsigned char) c;
   }
   error_manager->profile=NULL;
-  iptc_profile=(StringInfo *) GetImageProfile(image,"iptc");
+  /* The IPTC profile is actually an 8bim */
+  iptc_profile=(StringInfo *) GetImageProfile(image,"8bim");
   if (iptc_profile != (StringInfo *) NULL)
     {
       ConcatenateStringInfo(iptc_profile,profile);
@@ -656,7 +658,7 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
     }
   else
     {
-      status=SetImageProfile(image,"iptc",profile);
+      status=SetImageProfile(image,"8bim",profile);
       profile=DestroyStringInfo(profile);
       if (status == MagickFalse)
         {
@@ -740,8 +742,8 @@ static boolean ReadProfile(j_decompress_ptr jpeg_info)
       p=GetStringInfoDatum(profile);
       if ((length > 4) && (LocaleNCompare((char *) p,"exif",4) == 0))
         (void) CopyMagickString(name,"exif",MaxTextExtent);
-      if ((length > strlen(xmp_namespace)) &&
-          (LocaleNCompare((char *) p,xmp_namespace,strlen(xmp_namespace)) == 0))
+      else if ((length > XmpNamespaceExtent) &&
+          (LocaleNCompare((char *) p,xmp_namespace,XmpNamespaceExtent-1) == 0))
         {
           ssize_t
             j;
@@ -749,8 +751,8 @@ static boolean ReadProfile(j_decompress_ptr jpeg_info)
           /*
             Extract namespace from XMP profile.
           */
-          p=GetStringInfoDatum(profile);
-          for (j=0; j < (ssize_t) GetStringInfoLength(profile); j++)
+          p=GetStringInfoDatum(profile)+XmpNamespaceExtent;
+          for (j=XmpNamespaceExtent; j < (ssize_t) GetStringInfoLength(profile); j++)
           {
             if (*p == '\0')
               break;
@@ -1350,15 +1352,15 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   (void) FormatLocaleString(value,MaxTextExtent,"%.20g",(double)
     jpeg_info.out_color_space);
   (void) SetImageProperty(image,"jpeg:colorspace",value);
+  if ((dct_method == (const char *) NULL) && (image->quality > 0) &&
+      (image->quality <= 90))
+    jpeg_info.dct_method=JDCT_IFAST;
   if (image_info->ping != MagickFalse)
     {
       jpeg_destroy_decompress(&jpeg_info);
       (void) CloseBlob(image);
       return(GetFirstImageInList(image));
     }
-  if ((dct_method == (const char *) NULL) && (image->quality > 0) &&
-      (image->quality <= 90))
-    jpeg_info.dct_method=JDCT_IFAST;
   status=SetImageExtent(image,image->columns,image->rows);
   if (status == MagickFalse)
     {
@@ -2119,7 +2121,7 @@ static void WriteProfile(j_compress_ptr jpeg_info,Image *image)
           {
             if (profile != (StringInfo *) NULL)
               ConcatenateStringInfo(xmp_profile,profile);
-            GetStringInfoDatum(xmp_profile)[28]='\0';
+            GetStringInfoDatum(xmp_profile)[XmpNamespaceExtent]='\0';
             for (i=0; i < (ssize_t) GetStringInfoLength(xmp_profile); i+=65533L)
             {
               length=MagickMin(GetStringInfoLength(xmp_profile)-i,65533L);

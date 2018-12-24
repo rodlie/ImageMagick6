@@ -1716,7 +1716,7 @@ AC_SUBST(ZSTD_LIBS)
 dnl ===========================================================================
 
 # whether modules are built or not.
-with_ltdl='yes'
+with_ltdl='no'
 have_ltdl='no'
 LTDL_LIBS=''
 if test "$build_modules" != 'no' || test "X$ax_cv_check_cl_libcl" != Xno; then
@@ -1732,20 +1732,20 @@ if test "$build_modules" != 'no' || test "X$ax_cv_check_cl_libcl" != Xno; then
     if test $failed -gt 0 ; then
       AC_MSG_RESULT([no -- some components failed test])
       have_ltdl='no (failed tests)'
-    else
-      LTDL_LIBS='-lltdl'
-      LIBS="$LTDL_LIBS $LIBS"
-      AC_DEFINE(LTDL_DELEGATE,1,[Define if using libltdl to support dynamically loadable modules and OpenCL])
-      AC_DEFINE_UNQUOTED([LTDL_MODULE_EXT],["${shrext_cmds}"],[Native module suffix])
-      AC_MSG_RESULT([yes])
-      have_ltdl='yes'
+    #else
+    #  LTDL_LIBS='-lltdl'
+    #  LIBS="$LTDL_LIBS $LIBS"
+    #  AC_DEFINE(LTDL_DELEGATE,1,[Define if using libltdl to support dynamically loadable modules and OpenCL])
+    #  AC_DEFINE_UNQUOTED([LTDL_MODULE_EXT],["${shrext_cmds}"],[Native module suffix])
+    #  AC_MSG_RESULT([yes])
+    #  have_ltdl='yes'
     fi
   else
     AC_MSG_RESULT([no])
   fi
-  if test "$have_ltdl" != 'yes' ; then
-    AC_MSG_FAILURE([libltdl is required for modules and OpenCL builds],[1])
-  fi
+  #if test "$have_ltdl" != 'yes' ; then
+  #  AC_MSG_FAILURE([libltdl is required for modules and OpenCL builds],[1])
+  #fi
 fi
 AM_CONDITIONAL(WITH_LTDL, test "$have_ltdl" != 'no')
 

@@ -29729,7 +29729,7 @@ fi
 
 
 # whether modules are built or not.
-with_ltdl='yes'
+with_ltdl='no'
 have_ltdl='no'
 LTDL_LIBS=''
 if test "$build_modules" != 'no' || test "X$ax_cv_check_cl_libcl" != Xno; then
@@ -29798,31 +29798,21 @@ $as_echo_n "checking if libltdl package is complete... " >&6; }
       { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
       have_ltdl='no (failed tests)'
-    else
-      LTDL_LIBS='-lltdl'
-      LIBS="$LTDL_LIBS $LIBS"
-
-$as_echo "#define LTDL_DELEGATE 1" >>confdefs.h
-
-
-cat >>confdefs.h <<_ACEOF
-#define LTDL_MODULE_EXT "${shrext_cmds}"
-_ACEOF
-
-      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-      have_ltdl='yes'
+    #else
+    #  LTDL_LIBS='-lltdl'
+    #  LIBS="$LTDL_LIBS $LIBS"
+    #  AC_DEFINE(LTDL_DELEGATE,1,[Define if using libltdl to support dynamically loadable modules and OpenCL])
+    #  AC_DEFINE_UNQUOTED([LTDL_MODULE_EXT],["${shrext_cmds}"],[Native module suffix])
+    #  AC_MSG_RESULT([yes])
+    #  have_ltdl='yes'
     fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
   fi
-  if test "$have_ltdl" != 'yes' ; then
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error 1 "libltdl is required for modules and OpenCL builds
-See \`config.log' for more details" "$LINENO" 5; }
-  fi
+  #if test "$have_ltdl" != 'yes' ; then
+  #  AC_MSG_FAILURE([libltdl is required for modules and OpenCL builds],[1])
+  #fi
 fi
  if test "$have_ltdl" != 'no'; then
   WITH_LTDL_TRUE=
